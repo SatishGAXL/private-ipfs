@@ -4,12 +4,10 @@ import { BACKEND_URL, IPFS_GATEWAY } from "./config";
 import { InboxOutlined } from "@ant-design/icons";
 import type { UploadProps } from "antd";
 import { message, Upload, Table } from "antd";
-
 import { Space } from "antd";
-import { NavLink } from "react-router-dom";
-
 import "./App.css";
 
+// Define the structure of the data that will be displayed in the table.
 interface DataType {
   id: string;
   name: string;
@@ -18,6 +16,7 @@ interface DataType {
   cid: string;
 }
 
+// Define the columns for the Ant Design table.
 const columns = [
   {
     title: "File Name",
@@ -53,6 +52,7 @@ const columns = [
       <Space size="middle">
         <a
           onClick={async () => {
+            // Fetch the private URL from the backend and open it in a new tab.
             const response = await fetch(
               `${BACKEND_URL}/get-private-url/${record.cid}`
             );
@@ -68,10 +68,14 @@ const columns = [
 
 const { Dragger } = Upload;
 
+// Define the Home component, which is the main page of the application.
 export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
+  // Define the state for the data that will be displayed in the table.
   const [data, setData] = useState<DataType[] | null>(null);
+  // Define the state for the loading indicator.
   const [loading, setLoading] = useState(true);
 
+  // Function to fetch the files from the backend.
   const fetchFiles = async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/get-files`);
@@ -85,6 +89,7 @@ export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
     }
   };
 
+  // Define the props for the Ant Design Upload component.
   const props: UploadProps = {
     name: "file",
     multiple: true,
@@ -107,18 +112,21 @@ export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
     },
   };
 
+  // Fetch the files when the component mounts.
   useEffect(() => {
     fetchFiles();
   }, []);
 
   return (
     <div className="mainWrapper">
+      {/* Display a loading indicator while the data is being fetched. */}
       {loading ? (
         <div className="loading">Loading...</div>
       ) : (
         <div>
           <h1 className="pageTitle">Home</h1>
           <div className="uploadWrapper">
+            {/* Ant Design Upload component for uploading files. */}
             <Dragger {...props}>
               <p className="ant-upload-drag-icon">
                 <InboxOutlined />
@@ -133,6 +141,7 @@ export const Home = ({ messageApi }: { messageApi: MessageInstance }) => {
             </Dragger>
           </div>
           <div className="tableWrapper">
+            {/* Ant Design Table component for displaying the files. */}
             <Table<DataType> columns={columns} dataSource={data || []} />
           </div>
         </div>
